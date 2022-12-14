@@ -17,7 +17,19 @@ router.get('', function(req, res, next) {
 router.get("/:id",(req,res,next)=>{
   const id = req.params.id;
   req.db.select("*").from("servicetypes").where("Id",id)
-  .then(data=>res.status(200).json(data))
+  .then(data=>{
+    if (data.length===0) {
+      res.status(404).json({
+        error:true,
+        message:"Found no service type with that id"
+      });
+      return;
+    }
+    if (data.length===1) {
+      res.status(200).json(data[0]);
+      return;
+    }
+  })
   .catch(err=>{
     console.log(err);
     res.status(500).json({
