@@ -14,4 +14,17 @@ router.get('', function(req, res, next) {
   });
 });
 
+router.get("/:id",(req,res,next)=>{
+  const id = req.params.id;
+  req.db.select("*").from("servicetypes").where("Id",id)
+  .then(data=>res.status(200).json(data))
+  .catch(err=>{
+    console.log(err);
+    res.status(500).json({
+        error:true,
+        message:"SQL or internal server error, please contact the software engineer"
+    });
+  });
+});
+
 module.exports = router;
