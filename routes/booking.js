@@ -11,9 +11,9 @@ router.get('/available', function(req, res, next) {
             const available=[];
             const BookingIdList = data.map(d=>d.Id);
             req.db.select("*").from("bookedservices").whereIn("BookingId",BookingIdList).then(result=>{
-                if (new Date(date).getDay()===4){
+                if (new Date(date).getDay()===4 || new Date(date).getDay()===6){
                     
-                    for (let index = 0; index < 13; index++) {
+                    for (let index = 0; index < 20; index++) {
                         const count = result.filter(t=>{ return t.Time===index});
     
                         if (count.length < 4) {
@@ -22,10 +22,19 @@ router.get('/available', function(req, res, next) {
                     }
                     res.status(200).json(available);
                 }
-                else{
-                    for (let index = 0; index < 11; index++) {
-                        const count = result.filter(t=>{return t.Time===index});
+                else if (new Date(date).getDay()===6) {
+                    for (let index = 0; index < 14; index++) {
+                        const count = result.filter(t=>{ return t.Time===index});
+
                         if (count.length < 4) {
+                            available.push(index);
+                        } 
+                    }
+                }
+                else{
+                    for (let index = 0; index < 17; index++) {
+                        const count = result.filter(t=>{return t.Time===index});
+                        if (count.length < 3) {
                             available.push(index);
                         }
                     }
@@ -40,11 +49,15 @@ router.get('/available', function(req, res, next) {
             });
         }else{
             if (new Date(date).getDay()===4){
-                res.status(200).json([0,1,2,3,4,5,6,7,8,9,10,11,12]);
+                res.status(200).json([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
+            }
+            else if (new Date(date).getDay()===6){
+                res.status(200).json([0,1,2,3,4,5,6,7,8,9,10,11,12,13]);
             }
             else{
-                res.status(200).json([0,1,2,3,4,5,6,7,8,9,10]);
+                res.status(200).json([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
             }
+            
         }
     }).catch(err=>{
         console.log(err);
