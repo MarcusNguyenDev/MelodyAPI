@@ -63,7 +63,7 @@ router.get("/:id", (req, res, next) => {
     });
 });
 
-router.delete("/delete/:id", authorize, (req, res, next) => {
+router.put("/delete/:id", authorize, (req, res, next) => {
   const id = req.params.id;
   req.db
     .from("servicetypes")
@@ -92,8 +92,32 @@ router.post("/post", authorize, upload.single("image"), (req, res, next) => {
   //   } else if (err) {
   //   console.log(err)
   //   }})
-  console.log(!req.file);
-  res.status(200).json({ message: "OK" });
+  console.log(req.body.ServiceTypeDescription)
+  const data=req.body
+  if (!req.file) {
+    req.db.insert({
+      ServiceTypeName:data.ServiceTypeName,
+      ServiceTypeDescription:data.ServiceTypeDescription
+    }).into("servicetypes").then(res=>console.log(res)).catch(err=>{
+      console.log(err);
+      res.status(500).json({
+        error: true,
+        message: "SQL or internal server error",})
+    });
+  } else {
+    const fileName = req.file.filename;
+    console.log(fileName)
+    req.db.insert({
+      ServiceTypeName:data.ServiceTypeName,
+      ServiceTypeDescription:data.ServiceTypeDescription,
+      ServiceTypeImage:fileName
+    }).into("servicetypes").then(res=>console.log(res)).catch(err=>{
+      console.log(err);
+      res.status(500).json({
+        error: true,
+        message: "SQL or internal server error",})
+    });
+  }
 });
 
 module.exports = router;
