@@ -66,15 +66,35 @@ router.get("/:id", (req, res, next) => {
 router.put("/delete/:id", authorize, (req, res, next) => {
   const id = req.params.id;
   req.db
-    .from("servicetypes")
-    .where("Id", id)
-    .del()
-    .then(() =>
-      res.status(200).json({
-        error: false,
-        message: "Deleted",
-      })
-    )
+    .select("*")
+    .from("services")
+    .where("ServiceTypeId", id)
+    .then((data) => {
+      if (data.length > 0) {
+        res.status(401).json({
+          error: true,
+          message: "There are still services link to this type",
+        });
+      } else {
+        req.db
+          .from("servicetypes")
+          .where("Id", id)
+          .del()
+          .then(() =>
+            res.status(200).json({
+              error: false,
+              message: "Deleted",
+            })
+          )
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: true,
+              message: "SQL or internal server error",
+            });
+          });
+      }
+    })
     .catch((err) => {
       console.log(err);
       res.status(500).json({
@@ -92,31 +112,88 @@ router.post("/post", authorize, upload.single("image"), (req, res, next) => {
   //   } else if (err) {
   //   console.log(err)
   //   }})
-  console.log(req.body.ServiceTypeDescription)
-  const data=req.body
+  const data = req.body;
   if (!req.file) {
-    req.db.insert({
-      ServiceTypeName:data.ServiceTypeName,
-      ServiceTypeDescription:data.ServiceTypeDescription
-    }).into("servicetypes").then(res=>console.log(res)).catch(err=>{
-      console.log(err);
-      res.status(500).json({
-        error: true,
-        message: "SQL or internal server error",})
-    });
+    req.db
+      .insert({
+        ServiceTypeName: data.ServiceTypeName,
+        ServiceTypeDescription: data.ServiceTypeDescription,
+      })
+      .into("servicetypes")
+      .then(() => res.status(201).json({ error: false, message: "Success" }))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: true,
+          message: "SQL or internal server error",
+        });
+      });
   } else {
     const fileName = req.file.filename;
-    console.log(fileName)
-    req.db.insert({
-      ServiceTypeName:data.ServiceTypeName,
-      ServiceTypeDescription:data.ServiceTypeDescription,
-      ServiceTypeImage:fileName
-    }).into("servicetypes").then(res=>console.log(res)).catch(err=>{
-      console.log(err);
-      res.status(500).json({
-        error: true,
-        message: "SQL or internal server error",})
-    });
+    req.db
+      .insert({
+        ServiceTypeName: data.ServiceTypeName,
+        ServiceTypeDescription: data.ServiceTypeDescription,
+        ServiceTypeImage: fileName,
+      })
+      .into("servicetypes")
+      .then(() => res.status(201).json({ error: false, message: "Success" }))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: true,
+          message: "SQL or internal server error",
+        });
+      });
+  }
+});
+
+router.put("/put/:id", authorize, upload.single("image"), (req, res, next) => {
+  // const test =upload.single("image");
+  // test(req, res, function (err) {
+  //   if (err instanceof multer.MulterError) {
+  //     console.log(err)
+  //   } else if (err) {
+  //   console.log(err)
+  //   }})
+  const data = req.body;
+  console.log(data);
+  const id = req.params.id;
+  if (!req.file) {
+    req.db
+      .from("servicetypes")
+      .where("Id", id)
+      .update({
+        ServiceTypeName: data.ServiceTypeName,
+        ServiceTypeDescription: data.ServiceTypeDescription,
+      })
+      .then(() => res.status(201).json({ error: false, message: "Success" }))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: true,
+          message: "SQL or internal server error",
+        });
+      });
+  } else {
+    const fileName = req.file.filename;
+    req.db
+      .from("servicetypes")
+      .where("Id", id)
+      .update({
+        ServiceTypeName: data.ServiceTypeName,
+        ServiceTypeDescription: data.ServiceTypeDescription,
+        ServiceTypeImage: fileName,
+      })
+
+      .then(() => res.status(201).json({ error: false, message: "Success" }))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: true,
+          message: "SQL or internal server error",
+        });
+      });
   }
 });
 
