@@ -157,7 +157,6 @@ router.put("/put/:id", authorize, upload.single("image"), (req, res, next) => {
   //   console.log(err)
   //   }})
   const data = req.body;
-  console.log(data);
   const id = req.params.id;
   if (!req.file) {
     req.db
