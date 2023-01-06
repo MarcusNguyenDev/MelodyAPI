@@ -58,6 +58,22 @@ router.get("/BookingList", (req, res, next) => {
     });
 });
 
+router.get("/BookingList/:id", (req, res, next) => {
+  const reqId = req.params.id;
+  req.db
+    .select("*")
+    .from("bookings")
+    .where("Id", reqId)
+    .then((data) => res.status(200).json(data))
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: true,
+        message: "Server error, please report to the software engineer",
+      });
+    });
+});
+
 router.get("/BookedServices/:id", (req, res, next) => {
   const id = req.params.id;
   req.db
