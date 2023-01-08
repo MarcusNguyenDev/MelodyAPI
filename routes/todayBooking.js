@@ -8,7 +8,6 @@ const yyyy = today.getFullYear();
 const date = yyyy + "/" + mm + "/" + dd;
 /* GET users listing. */
 router.get("/BookedServices", function (req, res, next) {
-  console.log(date);
   req.db
     .select("*")
     .from("bookings")

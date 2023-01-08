@@ -88,6 +88,60 @@ router.get("/available", function (req, res, next) {
     });
 });
 
+router.post("/bookv2", (req, res, next) => {
+  const data = req.body;
+
+  if (
+    !data.selectedService ||
+    !data.selectedDate ||
+    !data.customerName ||
+    !data.customerPhoneNumber
+  ) {
+    res
+      .status(400)
+      .json({ error: true, message: "Missing request object keys" });
+    return;
+  }
+
+  req.db
+    .insert({
+      Customer: data.customerName,
+      PhoneNumber: data.customerPhoneNumber,
+      BookingDate: data.selectedDate,
+      CheckedIn: "NO",
+    })
+    .into("bookings")
+    .then((id) => {
+      const bookingId = id[0];
+      const BookedServices = data.selectedService.map((e) => ({
+        BookingId: bookingId,
+        ServiceId: e.ServiceId,
+        Time: e.TimeId,
+      }));
+      req.db
+        .insert(BookedServices)
+        .into("bookedservices")
+        .then(() =>
+          res.status(200).json({
+            error: false,
+            Message: "Success",
+          })
+        )
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json({
+            error: true,
+            message: "Internal SQL error",
+          });
+          return;
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ error: true, message: "SQL error" });
+    });
+});
+
 router.post("/book", (req, res, next) => {
   const data = req.body;
 

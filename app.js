@@ -49,7 +49,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/servicetypes", serviceTypeRouter);
 app.use("/services", servicesRouter);
-app.use("/booking", apiLimiter, bookingRouter);
+app.use("/booking", bookingRouter);
 app.use("/checkToken", authorize, checkTokenRouter);
 app.use("/todayBooking", authorize, todayBookingRouter);
 
