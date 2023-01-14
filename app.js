@@ -18,6 +18,8 @@ const servicesRouter = require("./routes/services");
 const bookingRouter = require("./routes/booking");
 const checkTokenRouter = require("./routes/checkToken");
 const todayBookingRouter = require("./routes/todayBooking");
+const dashBoardRouter = require("./routes/dashboard");
+const galleryRouter = require("./routes/gallery");
 
 const app = express();
 const apiLimiter = rateLimit({
@@ -52,6 +54,8 @@ app.use("/services", servicesRouter);
 app.use("/booking", bookingRouter);
 app.use("/checkToken", authorize, checkTokenRouter);
 app.use("/todayBooking", authorize, todayBookingRouter);
+app.use("/dashboard", authorize, dashBoardRouter);
+app.use("/gallery", galleryRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -1,15 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const authorize = require("../Components/Authorize");
+const QRCode = require("qrcode");
 
 /* GET users listing. */
 
 router.get("/available", function (req, res, next) {
   const date = req.query.date;
+  if (new Date(date).getDay() === 0) {
+    res.status(200).json([]);
+    return;
+  }
+
   req.db
     .select("*")
     .from("bookings")
     .where("BookingDate", "=", date)
+    .whereNot("CheckedIn", "C")
     .then((data) => {
       if (data.length > 0) {
         const available = [];
@@ -122,10 +128,18 @@ router.post("/bookv2", (req, res, next) => {
         .insert(BookedServices)
         .into("bookedservices")
         .then(() =>
-          res.status(200).json({
-            error: false,
-            Message: "Success",
-          })
+          QRCode.toDataURL(
+            data.customerName +
+              "|" +
+              data.customerPhoneNumber +
+              "|" +
+              data.selectedDate,
+            {
+              width: 400,
+            }
+          ).then((url) =>
+            res.status(201).json({ error: false, message: "Success", url: url })
+          )
         )
         .catch((err) => {
           console.log(err);
@@ -142,6 +156,7 @@ router.post("/bookv2", (req, res, next) => {
     });
 });
 
+// This route is deprecated
 router.post("/book", (req, res, next) => {
   const data = req.body;
 
