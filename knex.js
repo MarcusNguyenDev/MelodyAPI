@@ -4,7 +4,7 @@ module.exports = {
         host: 'localhost',
         database: 'melodydb',
         port: 3306,
-        user: 'root',
-        password: 'root'
+        user: 'admin',
+        password: 'ThisIsAnAdminPassword'
         }
 };

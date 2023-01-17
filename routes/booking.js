@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const QRCode = require("qrcode");
 
+const staffAvailable = 3;
+
 /* GET users listing. */
 
 router.get("/available", function (req, res, next) {
@@ -34,7 +36,7 @@ router.get("/available", function (req, res, next) {
                   return t.Time === index;
                 });
 
-                if (count.length < 4) {
+                if (count.length < staffAvailable) {
                   available.push(index);
                 }
               }
@@ -45,7 +47,7 @@ router.get("/available", function (req, res, next) {
                   return t.Time === index;
                 });
 
-                if (count.length < 4) {
+                if (count.length < staffAvailable) {
                   available.push(index);
                 }
               }
@@ -54,7 +56,7 @@ router.get("/available", function (req, res, next) {
                 const count = result.filter((t) => {
                   return t.Time === index;
                 });
-                if (count.length < 3) {
+                if (count.length < staffAvailable) {
                   available.push(index);
                 }
               }

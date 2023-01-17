@@ -6,20 +6,24 @@
 
 var app = require("../app");
 var debug = require("debug")("web-api:server");
-var http = require("http");
+var https = require("https");
+const fs = require("fs")
 
+const privateKey = fs.readFileSync("/etc/letsencrypt/live/melodynailspa.com/privkey.pem");
+const certificate = fs.readFileSync("/etc/letsencrypt/live/melodynailspa.com/fullchain.pem");
+const credentials = {key: privateKey, cert: certificate};
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || "3001");
+var port = normalizePort(process.env.PORT || "444");
 app.set("port", port);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = https.createServer(credentials,app);
 
 /**
  * Listen on provided port, on all network interfaces.

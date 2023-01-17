@@ -96,6 +96,20 @@ router.post("/post", authorize, (req, res, next) => {
     );
 });
 
+router.put("/edit/:id",authorize,(req,res,next)=>{
+  const id = req.params.id;
+  const reqbody = req.body;
+  req.db
+    .from("services")
+    .where("Id", id)
+    .update(reqbody)
+    .then(() => res.status(200).json({ error: false, message: "Deleted" }))
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ error: true, message: "Internal SQL error" });
+    });
+})
+
 router.put("/delete/:id", authorize, (req, res, next) => {
   const id = req.params.id;
   req.db
