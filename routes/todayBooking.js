@@ -43,6 +43,11 @@ router.get("/BookedServices", function (req, res, next) {
 
 router.get("/BookingList", (req, res, next) => {
   const reqDate = req.query.date;
+  if (!req.query.date) {
+    res.status(400).json({ error: true, message: "Missing date" });
+    return;
+  }
+
   req.db
     .select("*")
     .from("bookings")
