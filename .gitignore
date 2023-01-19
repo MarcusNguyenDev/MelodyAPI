@@ -1,6 +1,3 @@
 /node_modules
-/knex.js
-/bin
 /public
 /RESTClient.rest
-bin/www
