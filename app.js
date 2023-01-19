@@ -9,7 +9,6 @@ const jsonWebToken = require("jsonwebtoken");
 
 const rateLimit = require("express-rate-limit");
 const authorize = require("./Components/Authorize");
-const Iplogger = require("./Components/Iplogger");
 const cors = require("cors");
 
 const indexRouter = require("./routes/index");

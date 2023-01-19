@@ -4,5 +4,3 @@
 /public
 /RESTClient.rest
 bin/www
-bin/www
-knex.js
