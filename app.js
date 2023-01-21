@@ -2,10 +2,11 @@ const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
-const logger = require("morgan");
+const morgan = require("morgan");
 const options = require("./knex.js");
 const knex = require("knex")(options);
 const jsonWebToken = require("jsonwebtoken");
+const chalk = require("chalk");
 
 const rateLimit = require("express-rate-limit");
 const authorize = require("./Components/Authorize");
@@ -41,7 +42,24 @@ app.use((req, res, next) => {
 });
 
 app.use(cors());
-app.use(logger("dev"));
+app.use(
+  morgan(function (tokens, req, res) {
+    return [
+      chalk.white(tokens.date(req, res)),
+      chalk.yellow(tokens["remote-addr"](req, res)),
+      chalk.green.bold(tokens.method(req, res)),
+      tokens.status(req, res) > 500
+        ? chalk.red.bold(tokens.status(req, res))
+        : tokens.status(req, res) < 500 && tokens.status(req, res) > 400
+        ? chalk.yellow.bold(tokens.status(req, res))
+        : tokens.status(req, res) < 400 && tokens.status(req, res) > 300
+        ? chalk.blue.bold(tokens.status(req, res))
+        : chalk.green.bold(tokens.status(req, res)),
+      chalk.white(tokens.url(req, res)),
+      chalk.yellow(tokens["response-time"](req, res) + " ms"),
+    ].join(" ");
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

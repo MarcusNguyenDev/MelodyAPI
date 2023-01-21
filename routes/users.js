@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 
 const key = require("../secret_key.json");
+const authorize = require("../Components/Authorize");
 
 router.post("/login", (req, res, next) => {
   const jwt = req.jwt;
@@ -49,7 +50,7 @@ router.post("/login", (req, res, next) => {
     });
 });
 
-router.post("/create", (req, res, next) => {
+router.post("/create", authorize, (req, res, next) => {
   const data = req.body;
 
   const hashedPassword = bcrypt.hashSync(data.Password, 10);
@@ -61,6 +62,10 @@ router.post("/create", (req, res, next) => {
     .into("users")
     .then(() => res.status(201).json({ error: false, message: "Success" }))
     .catch((err) => console.log(err));
+});
+
+router.put("/put", authorize, (req, res, next) => {
+  const reqBody = req.body;
 });
 
 module.exports = router;
