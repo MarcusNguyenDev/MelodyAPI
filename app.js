@@ -7,6 +7,7 @@ const options = require("./knex.js");
 const knex = require("knex")(options);
 const jsonWebToken = require("jsonwebtoken");
 const chalk = require("chalk");
+const compression = require("compression");
 
 const rateLimit = require("express-rate-limit");
 const authorize = require("./Components/Authorize");
@@ -30,6 +31,22 @@ const apiLimiter = rateLimit({
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
+
+app.use(
+  compression({
+    filter: (req, res) => {
+      if (req.headers["x-no-compression"]) {
+        // don't compress responses with this request header
+        return false;
+      }
+      // fallback to standard filter function
+      return compression.filter(req, res);
+    },
+    level: 9,
+    memLevel: 9,
+    threshold: 0,
+  })
+);
 
 app.use((req, res, next) => {
   req.db = knex;
