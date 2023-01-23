@@ -10,6 +10,7 @@ router.get("", function (req, res, next) {
     req.db
       .select("*")
       .from("services")
+      .orderBy("ServiceTypeId", "asc")
       .then((data) => {
         res.status(200).json(data);
       })
@@ -96,7 +97,7 @@ router.post("/post", authorize, (req, res, next) => {
     );
 });
 
-router.put("/edit/:id",authorize,(req,res,next)=>{
+router.put("/edit/:id", authorize, (req, res, next) => {
   const id = req.params.id;
   const reqbody = req.body;
   req.db
@@ -108,7 +109,7 @@ router.put("/edit/:id",authorize,(req,res,next)=>{
       console.log(err);
       res.status(500).json({ error: true, message: "Internal SQL error" });
     });
-})
+});
 
 router.put("/delete/:id", authorize, (req, res, next) => {
   const id = req.params.id;
