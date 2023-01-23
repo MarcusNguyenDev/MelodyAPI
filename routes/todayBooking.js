@@ -74,8 +74,12 @@ router.get("/BookingList/Search", (req, res, next) => {
     req.db
       .select("*")
       .from("bookings")
-      .where("Customer", req.query.name)
-      .andWhere("PhoneNumber", req.query.phone)
+      .whereRaw(
+        "lower(Customer) like ?",
+        req.query.name.toLocaleLowerCase() + "%"
+      )
+      .andWhereRaw("PhoneNumber like ?", req.query.phone + "%")
+      .orderBy("BookingDate", "desc")
       .then((data) => res.status(200).json(data))
       .catch((err) => {
         console.log(err);
@@ -89,7 +93,11 @@ router.get("/BookingList/Search", (req, res, next) => {
     req.db
       .select("*")
       .from("bookings")
-      .where("Customer", req.query.name)
+      .whereRaw(
+        "lower(Customer) like ?",
+        req.query.name.toLocaleLowerCase() + "%"
+      )
+      .orderBy("BookingDate", "desc")
       .then((data) => res.status(200).json(data))
       .catch((err) => {
         console.log(err);
@@ -103,7 +111,8 @@ router.get("/BookingList/Search", (req, res, next) => {
     req.db
       .select("*")
       .from("bookings")
-      .where("PhoneNumber", req.query.phone)
+      .whereRaw("PhoneNumber like ?", req.query.phone + "%")
+      .orderBy("BookingDate", "desc")
       .then((data) => res.status(200).json(data))
       .catch((err) => {
         console.log(err);
