@@ -19,6 +19,7 @@ router.get("", (req, res, next) => {
   req.db
     .select("*")
     .from("gallery")
+    .orderBy("Id", "desc")
     .then((data) => res.status(200).json(data))
     .catch((err) => {
       console.log(err),
