@@ -65,11 +65,11 @@ app.use(
       chalk.white(tokens.date(req, res)),
       chalk.yellow(tokens["remote-addr"](req, res)),
       chalk.green.bold(tokens.method(req, res)),
-      tokens.status(req, res) > 500
+      tokens.status(req, res) >= 500
         ? chalk.red.bold(tokens.status(req, res))
-        : tokens.status(req, res) < 500 && tokens.status(req, res) > 400
+        : tokens.status(req, res) < 500 && tokens.status(req, res) >= 400
         ? chalk.yellow.bold(tokens.status(req, res))
-        : tokens.status(req, res) < 400 && tokens.status(req, res) > 300
+        : tokens.status(req, res) < 400 && tokens.status(req, res) >= 300
         ? chalk.blue.bold(tokens.status(req, res))
         : chalk.green.bold(tokens.status(req, res)),
       chalk.white(tokens.url(req, res)),

@@ -62,6 +62,59 @@ router.get("/BookingList", (req, res, next) => {
     });
 });
 
+router.get("/BookingList/Search", (req, res, next) => {
+  if (!req.query.name && !req.query.phone) {
+    res
+      .status(400)
+      .json({ error: true, message: "Name and Phone field are both empty" });
+    return;
+  }
+  if (req.query.name !== "" && req.query.phone !== "") {
+    // Both name and phone is given
+    req.db
+      .select("*")
+      .from("bookings")
+      .where("Customer", req.query.name)
+      .andWhere("PhoneNumber", req.query.phone)
+      .then((data) => res.status(200).json(data))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: true,
+          message: "Server error, please report to the software engineer",
+        });
+      });
+  } else if (req.query.name !== "" && req.query.phone === "") {
+    // Only name is given
+    req.db
+      .select("*")
+      .from("bookings")
+      .where("Customer", req.query.name)
+      .then((data) => res.status(200).json(data))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: true,
+          message: "Server error, please report to the software engineer",
+        });
+      });
+  } else {
+    // Only phone is given
+    req.db
+      .select("*")
+      .from("bookings")
+      .where("PhoneNumber", req.query.phone)
+      .then((data) => res.status(200).json(data))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: true,
+          message: "Server error, please report to the software engineer",
+        });
+      });
+  }
+});
+
 router.get("/BookingList/:id", (req, res, next) => {
   const reqId = req.params.id;
   req.db
@@ -130,4 +183,5 @@ router.put("/BookedServices/setUnDone/:id", (req, res, next) => {
     });
 });
 
+router.put("/BookingList", (req, res, next) => {});
 module.exports = router;
