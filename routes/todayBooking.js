@@ -131,8 +131,6 @@ router.get("/BookingList/Upcoming", (req, res, next) => {
     .whereRaw("BookingDate >= CURDATE()")
     .orderBy("BookingDate", "asc")
     .then((data) => {
-      console.log("tested");
-      console.log(data);
       res.status(200).json(data);
     })
     .catch((err) => {
