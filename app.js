@@ -9,6 +9,7 @@ const jsonWebToken = require("jsonwebtoken");
 const chalk = require("chalk");
 const compression = require("compression");
 
+const moment = require("moment");
 const rateLimit = require("express-rate-limit");
 const authorize = require("./Components/Authorize");
 const cors = require("cors");
@@ -62,7 +63,9 @@ app.use(cors());
 app.use(
   morgan(function (tokens, req, res) {
     return [
-      chalk.white(tokens.date(req, res)),
+      chalk.white(
+        moment().tz("Australia/Brisbane").format("DD/MM/YY HH:mm:ss")
+      ),
       chalk.yellow(tokens["remote-addr"](req, res)),
       chalk.green.bold(tokens.method(req, res)),
       tokens.status(req, res) >= 500
