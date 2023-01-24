@@ -124,6 +124,23 @@ router.get("/BookingList/Search", (req, res, next) => {
   }
 });
 
+router.get("BookingList/Upcoming", (req, res, next) => {
+  req.db
+    .select()
+    .from("booking")
+    .whereRaw("BookingDate >= CURDATE()")
+    .then((data) => res.status(200).json(data))
+    .catch((err) => {
+      console.log(err);
+      res
+        .status(500)
+        .json({
+          error: true,
+          message: "SQL errors, contact the software engineer for support",
+        });
+    });
+});
+
 router.get("/BookingList/:id", (req, res, next) => {
   const reqId = req.params.id;
   req.db
