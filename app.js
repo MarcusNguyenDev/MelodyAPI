@@ -63,9 +63,7 @@ app.use(cors());
 app.use(
   morgan(function (tokens, req, res) {
     return [
-      chalk.white(
-        moment().tz("Australia/Brisbane").format("DD/MM/YY HH:mm:ss")
-      ),
+      chalk.white(moment().format("DD/MM/YY HH:mm:ss")),
       chalk.yellow(tokens["remote-addr"](req, res)),
       chalk.green.bold(tokens.method(req, res)),
       tokens.status(req, res) >= 500
