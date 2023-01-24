@@ -124,20 +124,23 @@ router.get("/BookingList/Search", (req, res, next) => {
   }
 });
 
-router.get("BookingList/Upcoming", (req, res, next) => {
+router.get("/BookingList/Upcoming", (req, res, next) => {
   req.db
     .select()
-    .from("booking")
+    .from("bookings")
     .whereRaw("BookingDate >= CURDATE()")
-    .then((data) => res.status(200).json(data))
+    .orderBy("BookingDate", "asc")
+    .then((data) => {
+      console.log("tested");
+      console.log(data);
+      res.status(200).json(data);
+    })
     .catch((err) => {
       console.log(err);
-      res
-        .status(500)
-        .json({
-          error: true,
-          message: "SQL errors, contact the software engineer for support",
-        });
+      res.status(500).json({
+        error: true,
+        message: "SQL errors, contact the software engineer for support",
+      });
     });
 });
 
@@ -209,5 +212,4 @@ router.put("/BookedServices/setUnDone/:id", (req, res, next) => {
     });
 });
 
-router.put("/BookingList", (req, res, next) => {});
 module.exports = router;
