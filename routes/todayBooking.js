@@ -239,6 +239,7 @@ router.get("/BookedServices", function (req, res, next) {
           .select("*")
           .from("bookedservices")
           .whereIn("BookingId", bookingIdList)
+          .whereNot("CheckedIn", "C")
           .then((data) => res.status(200).json(data))
           .catch((err) => {
             console.log(err);
