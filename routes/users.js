@@ -66,6 +66,7 @@ router.post("/create", authorize, (req, res, next) => {
 
 router.put("/put", authorize, (req, res, next) => {
   const reqBody = req.body;
+  console.log(reqBody);
 });
 
 module.exports = router;
