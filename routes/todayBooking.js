@@ -7,40 +7,8 @@ const mm = String(today.getMonth() + 1).padStart(2, "0");
 const yyyy = today.getFullYear();
 const date = yyyy + "/" + mm + "/" + dd;
 /* GET users listing. */
-router.get("/BookedServices", function (req, res, next) {
-  req.db
-    .select("*")
-    .from("bookings")
-    .where("BookingDate", date)
-    .then((bookinglist) => {
-      //const bookingIdList = bookinglist.map((data)=>({Id:data.Id,customer:data.Customer}));
-      if (bookinglist.length === 0) {
-        res.status(200).json([]);
-      } else {
-        const bookingIdList = bookinglist.map((data) => data.Id);
-        req.db
-          .select("*")
-          .from("bookedservices")
-          .whereIn("BookingId", bookingIdList)
-          .then((data) => res.status(200).json(data))
-          .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-              error: true,
-              message: "Server error, please report to the software engineer",
-            });
-          });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: true,
-        message: "Server error, please report to the software engineer",
-      });
-    });
-});
 
+//BookingList
 router.get("/BookingList", (req, res, next) => {
   const reqDate = req.query.date;
   if (!req.query.date) {
@@ -149,6 +117,138 @@ router.get("/BookingList/:id", (req, res, next) => {
     .from("bookings")
     .where("Id", reqId)
     .then((data) => res.status(200).json(data))
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: true,
+        message: "Server error, please report to the software engineer",
+      });
+    });
+});
+
+router.put("/BookingList/cancel/:id", (req, res, next) => {
+  const id = req.params.id;
+  req.db
+    .select("*")
+    .from("bookings")
+    .where("Id", id)
+    .then((data) => {
+      if (data[0].CheckedIn !== "C") {
+        console.log(data.CheckedIn);
+        req.db
+          .from("bookings")
+          .update({ CheckedIn: "C" })
+          .where("Id", id)
+          .then(() =>
+            res.status(201).json({ error: false, message: "Success" })
+          )
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: true,
+              message: "Server error, please report to the software engineer",
+            });
+          });
+      } else {
+        req.db
+          .from("bookings")
+          .update({ CheckedIn: "NO" })
+          .where("Id", id)
+          .then(() =>
+            res.status(201).json({ error: false, message: "Success" })
+          )
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: true,
+              message: "Server error, please report to the software engineer",
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: true,
+        message: "Server error, please report to the software engineer",
+      });
+    });
+});
+
+router.put("/BookingList/checkIn/:id", (req, res, next) => {
+  const id = req.params.id;
+  req.db
+    .select("*")
+    .from("bookings")
+    .where("Id", id)
+    .then((data) => {
+      if (data[0].CheckedIn !== "YES") {
+        req.db
+          .from("bookings")
+          .update({ CheckedIn: "YES" })
+          .where("Id", id)
+          .then(() =>
+            res.status(201).json({ error: false, message: "Success" })
+          )
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: true,
+              message: "Server error, please report to the software engineer",
+            });
+          });
+      } else {
+        req.db
+          .from("bookings")
+          .update({ CheckedIn: "NO" })
+          .where("Id", id)
+          .then(() =>
+            res.status(201).json({ error: false, message: "Success" })
+          )
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: true,
+              message: "Server error, please report to the software engineer",
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: true,
+        message: "Server error, please report to the software engineer",
+      });
+    });
+});
+
+// BookedServices
+router.get("/BookedServices", function (req, res, next) {
+  req.db
+    .select("*")
+    .from("bookings")
+    .where("BookingDate", date)
+    .then((bookinglist) => {
+      //const bookingIdList = bookinglist.map((data)=>({Id:data.Id,customer:data.Customer}));
+      if (bookinglist.length === 0) {
+        res.status(200).json([]);
+      } else {
+        const bookingIdList = bookinglist.map((data) => data.Id);
+        req.db
+          .select("*")
+          .from("bookedservices")
+          .whereIn("BookingId", bookingIdList)
+          .then((data) => res.status(200).json(data))
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: true,
+              message: "Server error, please report to the software engineer",
+            });
+          });
+      }
+    })
     .catch((err) => {
       console.log(err);
       res.status(500).json({
