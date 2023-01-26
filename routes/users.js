@@ -66,7 +66,58 @@ router.post("/create", authorize, (req, res, next) => {
 
 router.put("/put", authorize, (req, res, next) => {
   const reqBody = req.body;
-  console.log(reqBody);
+  if (
+    !reqBody.userName &&
+    !reqBody.password &&
+    !reqBody.newUserName &&
+    !reqBody.newPassword
+  ) {
+    res.status(400).json({
+      error: true,
+      message: "Missing some fields. Check 4 fields as all must be filled",
+    });
+    return;
+  }
+
+  req.db
+    .select("*")
+    .from("users")
+    .where("UserName", reqBody.userName)
+    .then((users) => {
+      if (users.length === 1) {
+        if (bcrypt.compareSync(reqBody.password, users[0].Password)) {
+          const hashedPassword = bcrypt.hashSync(reqBody.newPassword, 10);
+          req.db
+            .from("users")
+            .where("UserName", reqBody.userName)
+            .update({
+              UserName: reqBody.newUserName,
+              Password: hashedPassword,
+            })
+            .then(() =>
+              res.status(201).json({ error: false, message: "Success" })
+            )
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({ error: true, message: "SQL errors" });
+            });
+        } else {
+          res.status(400).json({
+            error: true,
+            message: "Invalid current username or password",
+          });
+        }
+      } else {
+        res.status(400).json({
+          error: true,
+          message: "Invalid current username or password",
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ error: true, message: "SQL errors" });
+    });
 });
 
 module.exports = router;
