@@ -32,11 +32,21 @@ router.get("/BookingList", (req, res, next) => {
 
 router.get("/BookingList/Search", (req, res, next) => {
   if (!req.query.name && !req.query.phone) {
-    res
-      .status(400)
-      .json({ error: true, message: "Name and Phone field are both empty" });
+    req.db
+      .select("*")
+      .from("bookings")
+      .orderBy("BookingDate", "desc")
+      .then((data) => res.status(200).json(data))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: true,
+          message: "Server error, please report to the software engineer",
+        });
+      });
     return;
   }
+
   if (req.query.name !== "" && req.query.phone !== "") {
     // Both name and phone is given
     req.db
