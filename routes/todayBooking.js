@@ -229,6 +229,7 @@ router.get("/BookedServices", function (req, res, next) {
     .select("*")
     .from("bookings")
     .where("BookingDate", date)
+    .whereNot("CheckedIn", "C")
     .then((bookinglist) => {
       //const bookingIdList = bookinglist.map((data)=>({Id:data.Id,customer:data.Customer}));
       if (bookinglist.length === 0) {
@@ -239,7 +240,6 @@ router.get("/BookedServices", function (req, res, next) {
           .select("*")
           .from("bookedservices")
           .whereIn("BookingId", bookingIdList)
-          .whereNot("CheckedIn", "C")
           .then((data) => res.status(200).json(data))
           .catch((err) => {
             console.log(err);
