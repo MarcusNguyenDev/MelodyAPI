@@ -1,11 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-const today = new Date();
-const dd = String(today.getDate()).padStart(2, "0");
-const mm = String(today.getMonth() + 1).padStart(2, "0");
-const yyyy = today.getFullYear();
-const date = yyyy + "/" + mm + "/" + dd;
 /* GET users listing. */
 
 //BookingList
@@ -235,6 +230,11 @@ router.put("/BookingList/checkIn/:id", (req, res, next) => {
 
 // BookedServices
 router.get("/BookedServices", function (req, res, next) {
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2, "0");
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const yyyy = today.getFullYear();
+  const date = yyyy + "/" + mm + "/" + dd;
   req.db
     .select("*")
     .from("bookings")
@@ -242,23 +242,19 @@ router.get("/BookedServices", function (req, res, next) {
     .whereNot("CheckedIn", "C")
     .then((bookinglist) => {
       //const bookingIdList = bookinglist.map((data)=>({Id:data.Id,customer:data.Customer}));
-      if (bookinglist.length === 0) {
-        res.status(200).json([]);
-      } else {
-        const bookingIdList = bookinglist.map((data) => data.Id);
-        req.db
-          .select("*")
-          .from("bookedservices")
-          .whereIn("BookingId", bookingIdList)
-          .then((data) => res.status(200).json(data))
-          .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-              error: true,
-              message: "Server error, please report to the software engineer",
-            });
+      const bookingIdList = bookinglist.map((data) => data.Id);
+      req.db
+        .select("*")
+        .from("bookedservices")
+        .whereIn("BookingId", bookingIdList)
+        .then((data) => res.status(200).json(data))
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json({
+            error: true,
+            message: "Server error, please report to the software engineer",
           });
-      }
+        });
     })
     .catch((err) => {
       console.log(err);
