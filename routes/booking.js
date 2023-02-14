@@ -3,6 +3,8 @@ const router = express.Router();
 const QRCode = require("qrcode");
 
 const staffAvailable = 3;
+const tuesdayStaffAvailable = 2;
+const saturdayStaffAvailable = 3;
 
 /* GET users listing. */
 
@@ -27,10 +29,8 @@ router.get("/available", function (req, res, next) {
           .from("bookedservices")
           .whereIn("BookingId", BookingIdList)
           .then((result) => {
-            if (
-              new Date(date).getDay() === 4 ||
-              new Date(date).getDay() === 6
-            ) {
+            //Special for Thursday
+            if (new Date(date).getDay() === 4) {
               for (let index = 0; index < 20; index++) {
                 const count = result.filter((t) => {
                   return t.Time === index;
@@ -41,17 +41,34 @@ router.get("/available", function (req, res, next) {
                 }
               }
               res.status(200).json(available);
-            } else if (new Date(date).getDay() === 6) {
+            }
+            //Special for Saturday
+            else if (new Date(date).getDay() === 6) {
               for (let index = 0; index < 14; index++) {
                 const count = result.filter((t) => {
                   return t.Time === index;
                 });
 
-                if (count.length < staffAvailable) {
+                if (count.length < 2) {
                   available.push(index);
                 }
               }
-            } else {
+              res.status(200).json(available);
+            }
+            //Special for Tuesday
+            else if (new Date(date).getDay() === 2) {
+              for (let index = 0; index < 14; index++) {
+                const count = result.filter((t) => {
+                  return t.Time === index;
+                });
+                if (count.length < tuesdayStaffAvailable) {
+                  available.push(index);
+                }
+              }
+              res.status(200).json(available);
+            }
+            //All other cases
+            else {
               for (let index = 0; index < 17; index++) {
                 const count = result.filter((t) => {
                   return t.Time === index;
